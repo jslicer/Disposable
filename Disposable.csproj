@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>CVV.Disposable</AssemblyName>
+    <RootNamespace>CVV</RootNamespace>
   </PropertyGroup>
 
 </Project>
