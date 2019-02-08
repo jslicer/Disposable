@@ -1,0 +1,22 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>CVV.Disposable</id>
+    <version>1.0.0</version>
+    <title>CVV.Disposable</title>
+    <authors>Clay Ver Valen</authors>
+    <owners>Clay Ver Valen</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CVV.Disposable is a thread safe disposable base class used in many other projects.</description>
+    <releaseNotes>Initial stable release</releaseNotes>
+    <copyright>Copyright © Clay Ver Valen 2019</copyright>
+    <license type="expression">MIT</license>
+    <repository type="git" url="https://github.com/clayv/Disposable" />
+    <tags>disposable</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard1.0">
+        <dependency id="NETStandard.Library" version="1.6.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
