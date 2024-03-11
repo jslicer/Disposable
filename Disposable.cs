@@ -1,61 +1,77 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace CVV
+﻿namespace CVV
 {
-    public abstract class Disposable : IDisposable
+    using System;
+    using System.Diagnostics;
+
+    public abstract class Disposable : System.IDisposable, IDisposable
     {
-        private bool m_Disposed = false;
-        protected object NoDisposeWhileLocked = new object();
+        private bool _disposed;
+
+        ~Disposable()
+        {
+            this.Dispose(false);
+        }
+
         public event EventHandler OnDispose;
+
+        protected object NoDisposeWhileLocked { get; } = new object();
 
         protected bool Disposed
         {
             get
             {
-                lock (NoDisposeWhileLocked)
+                lock (this.NoDisposeWhileLocked)
                 {
-                    return m_Disposed;
+                    return this._disposed;
                 }
             }
         }
-
-        protected bool AssertSafe()
-        {
-            if (Disposed == true)
-            {
-                throw new ObjectDisposedException($"Object of type {GetType().Name} with hash code {GetHashCode()} has been disposed");
-            }
-
-            return true;
-        }
-
-        protected virtual void CleanUpResources() { }
 
         public void Dispose()
         {
-            lock (NoDisposeWhileLocked)
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        // ReSharper disable once FlagArgument
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                if (m_Disposed == false)
+                lock (this.NoDisposeWhileLocked)
                 {
+                    if (this._disposed)
+                    {
+                        return;
+                    }
+
                     try
                     {
-                        OnDispose?.Invoke(this, EventArgs.Empty); ;
+                        this.OnDispose?.Invoke(this, EventArgs.Empty);
                     }
                     finally
                     {
-                        CleanUpResources();
-                        m_Disposed = true;
-                        GC.SuppressFinalize(this);
+                        this.CleanUpResources();
+                        this._disposed = true;
                     }
                 }
             }
+            else
+            {
+                Debug.WriteLineIf(
+                    Debugger.IsAttached,
+                    $"Object of type {this.GetType().Name} with hash code {this.GetHashCode()} was not disposed of and was garbage collected");
+                this.CleanUpResources();
+            }
         }
 
-        ~Disposable()
+        protected bool AssertSafe() => this.Disposed
+            ? throw new ObjectDisposedException($"Object of type {this.GetType().Name} with hash code {this.GetHashCode()} has been disposed")
+            : true;
+
+        protected virtual void CleanUpResources()
         {
-            Debug.WriteLineIf(Debugger.IsAttached, $"Object of type {GetType().Name} with hash code {GetHashCode()} was not disposed of and was garbage collected");
-            CleanUpResources();
+            // Intentionally empty.
         }
     }
 }
